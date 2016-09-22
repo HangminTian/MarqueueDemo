@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
             Log.d(TAG, "fieldStatus == null");
             return;
         }
-        fieldStatus.setAccessible(true);
+
         Byte mStatus = -1;
         try {
             mStatus = (Byte) fieldStatus.get(mMarquee);
