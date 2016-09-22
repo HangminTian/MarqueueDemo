@@ -17,6 +17,8 @@ public class MainActivity extends Activity {
     private static final String TAG = "thm";
     private static final byte MARQUEE_STOPPED = 0x0;
     private TextView mTextView;
+    private Field fieldStatus = null;
+    private Object mMarquee = null;
 
     private Timer mTimer;
     private int CHECK_MARQUE_STOPED = 10201;
@@ -47,8 +49,13 @@ public class MainActivity extends Activity {
         }, 2000);
     }
 
-    public void checkStop(){
+    private void getFiled(){
         Class<?> mTextViewClass = mTextView.getClass();
+
+        if(mTextViewClass != TextView.class){
+            mTextViewClass = mTextViewClass.getSuperclass();
+        }
+
         Field filedMarquee = null;
         try {
             filedMarquee = mTextViewClass.getDeclaredField("mMarquee");
@@ -56,28 +63,34 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
         if(filedMarquee == null){
-            Log.d(TAG, "filedMarquee == null");
             return;
         }
         filedMarquee.setAccessible(true);
 
-        Object mMarquee = null;
         try {
             mMarquee = filedMarquee.get(mTextView);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
         if(mMarquee == null){
-            Log.d(TAG, "mMarquee == null");
             return;
         }
 
         Class<?> mMarqueeClass = mMarquee.getClass();
-        Field fieldStatus = null;
         try {
             fieldStatus = mMarqueeClass.getDeclaredField("mStatus");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
+        }
+        if(fieldStatus == null){
+            return;
+        }
+        fieldStatus.setAccessible(true);
+    }
+
+    public void checkStop(){
+        if(fieldStatus == null){
+            getFiled();
         }
         if(fieldStatus == null){
             Log.d(TAG, "fieldStatus == null");
